@@ -89,6 +89,7 @@ type Options struct {
 	PassAuthorization             bool          `flag:"pass-authorization-header" cfg:"pass_authorization_header" env:"OAUTH2_PROXY_PASS_AUTHORIZATION_HEADER"`
 	SkipAuthPreflight             bool          `flag:"skip-auth-preflight" cfg:"skip_auth_preflight" env:"OAUTH2_PROXY_SKIP_AUTH_PREFLIGHT"`
 	FlushInterval                 time.Duration `flag:"flush-interval" cfg:"flush_interval" env:"OAUTH2_PROXY_FLUSH_INTERVAL"`
+	SessionValidateURL            string        `flag:"session-validate-url" cfg:"session_validate_url" env:"OAUTH2_PROXY_SESSION_VALIDATE_URL"`
 
 	// These options allow for other providers besides Google, with
 	// potential overrides.
