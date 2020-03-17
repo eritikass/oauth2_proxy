@@ -958,6 +958,12 @@ func (p *OAuthProxy) getAuthenticatedSession(rw http.ResponseWriter, req *http.R
 		return nil, ErrNeedsLogin
 	}
 
+	err = p.ValidateUserSession(session)
+	if err != nil {
+		logger.Printf("Error validating user session: %s", err)
+		return nil, ErrNeedsLogin
+	}
+
 	return session, nil
 }
 
@@ -1066,6 +1072,34 @@ func (p *OAuthProxy) addHeadersForProxying(rw http.ResponseWriter, req *http.Req
 	} else {
 		rw.Header().Set("GAP-Auth", session.Email)
 	}
+}
+
+// ValidateUserSession is validating user session against session-validate-url when given
+func (p *OAuthProxy) ValidateUserSession(session *sessionsapi.SessionState) error {
+	if p.SessionValidateURL == "" {
+		return nil
+	}
+
+	validateURL, err := url.Parse(p.SessionValidateURL)
+	if err != nil {
+		return err
+	}
+	query, _ := url.ParseQuery(validateURL.RawQuery)
+	query.Set("user", session.Email)
+	validateURL.RawQuery = query.Encode()
+	// logger.Printf("validate-session -> %s", validateURL.String())
+
+	req, _ := http.NewRequest("GET", validateURL.String(), nil)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("session validate error for user %s [%s] (StatusCode=%d)", session.Email, remoteAddr, resp.StatusCode)
+	}
+
+	return nil
 }
 
 // CheckBasicAuth checks the requests Authorization header for basic auth
