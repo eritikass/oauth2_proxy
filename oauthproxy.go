@@ -115,6 +115,7 @@ type OAuthProxy struct {
 	realClientIPParser   realClientIPParser
 	Banner               string
 	Footer               string
+	SessionValidateURL   string
 }
 
 // UpstreamProxy represents an upstream server to proxy to
@@ -323,6 +324,7 @@ func NewOAuthProxy(opts *Options, validator func(string) bool) *OAuthProxy {
 		templates:            loadTemplates(opts.CustomTemplatesDir),
 		Banner:               opts.Banner,
 		Footer:               opts.Footer,
+		SessionValidateURL:   opts.SessionValidateURL,
 	}
 }
 
