@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"math/rand"
 	"net/http"
 	"os"
@@ -167,15 +168,15 @@ func main() {
 
 	if len(opts.Banner) >= 1 {
 		if opts.Banner == "-" {
-			oauthproxy.SignInMessage = ""
+			oauthproxy.SignInMessage = template.HTML("")
 		} else {
-			oauthproxy.SignInMessage = opts.Banner
+			oauthproxy.SignInMessage = template.HTML(opts.Banner)
 		}
 	} else if len(opts.EmailDomains) != 0 && opts.AuthenticatedEmailsFile == "" {
 		if len(opts.EmailDomains) > 1 {
-			oauthproxy.SignInMessage = fmt.Sprintf("Authenticate using one of the following domains: %v", strings.Join(opts.EmailDomains, ", "))
+			oauthproxy.SignInMessage = template.HTML(fmt.Sprintf("Authenticate using one of the following domains: %v", strings.Join(opts.EmailDomains, ", ")))
 		} else if opts.EmailDomains[0] != "*" {
-			oauthproxy.SignInMessage = fmt.Sprintf("Authenticate using %v", opts.EmailDomains[0])
+			oauthproxy.SignInMessage = template.HTML(fmt.Sprintf("Authenticate using %v", opts.EmailDomains[0]))
 		}
 	}
 

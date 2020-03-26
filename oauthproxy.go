@@ -92,7 +92,7 @@ type OAuthProxy struct {
 	providerNameOverride string
 	sessionStore         sessionsapi.SessionStore
 	ProxyPrefix          string
-	SignInMessage        string
+	SignInMessage        template.HTML
 	HtpasswdFile         *HtpasswdFile
 	DisplayHtpasswdForm  bool
 	serveMux             http.Handler
