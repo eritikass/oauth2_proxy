@@ -960,7 +960,7 @@ func (p *OAuthProxy) getAuthenticatedSession(rw http.ResponseWriter, req *http.R
 		return nil, ErrNeedsLogin
 	}
 
-	err = p.ValidateUserSession(session)
+	err = p.ValidateUserSession(session, getClientString(p.realClientIPParser, req, false))
 	if err != nil {
 		logger.Printf("Error validating user session: %s", err)
 		return nil, ErrNeedsLogin
@@ -1077,7 +1077,7 @@ func (p *OAuthProxy) addHeadersForProxying(rw http.ResponseWriter, req *http.Req
 }
 
 // ValidateUserSession is validating user session against session-validate-url when given
-func (p *OAuthProxy) ValidateUserSession(session *sessionsapi.SessionState) error {
+func (p *OAuthProxy) ValidateUserSession(session *sessionsapi.SessionState, remoteAddr string) error {
 	if p.SessionValidateURL == "" {
 		return nil
 	}
@@ -1088,6 +1088,7 @@ func (p *OAuthProxy) ValidateUserSession(session *sessionsapi.SessionState) erro
 	}
 	query, _ := url.ParseQuery(validateURL.RawQuery)
 	query.Set("user", session.Email)
+	query.Set("ip", remoteAddr)
 	validateURL.RawQuery = query.Encode()
 	// logger.Printf("validate-session -> %s", validateURL.String())
 
